@@ -6,11 +6,13 @@ import (
 	"assignment/internals/core/services"
 	"assignment/internals/helper"
 	"assignment/internals/repositories"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
 	"gorm.io/gorm"
 	"log"
+	"os"
 )
 
 func main() {
@@ -18,6 +20,8 @@ func main() {
 	if err != nil {
 		log.Println(".env file not found or could not be loaded")
 	}
+
+	appPort := os.Getenv("APP_PORT")
 
 	cfg := adapter.Load()
 	dsn := cfg.DSN()
@@ -42,7 +46,7 @@ func main() {
 
 	userHandler.RegisterRoutes(api)
 
-	log.Fatal(app.Listen(":8081"))
+	log.Fatal(app.Listen(fmt.Sprintf(":%s", appPort)))
 }
 
 func InitializeDatabase(db *gorm.DB, dsn string) {
