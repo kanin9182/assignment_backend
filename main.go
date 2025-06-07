@@ -1,6 +1,12 @@
+// @title Assignment API
+// @version 1.0
+// @description This is an API for the assignment project.
+// @host localhost:8081
+// @BasePath /api
 package main
 
 import (
+	_ "assignment/docs"
 	"assignment/internals/adapter"
 	"assignment/internals/core/handler"
 	"assignment/internals/core/services"
@@ -10,6 +16,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 	"gorm.io/gorm"
 	"log"
 	"os"
@@ -38,13 +45,19 @@ func main() {
 	userHandler := handler.NewUserHandler(userService)
 
 	app := fiber.New()
+
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://127.0.0.1:5500/",
 		AllowCredentials: true,
 	}))
-	api := app.Group("/api")
 
+	api := app.Group("/api")
 	userHandler.RegisterRoutes(api)
+
+	app.Get("/swagger/*", func(c *fiber.Ctx) error {
+		fmt.Println("Swagger called:", c.Path())
+		return fiberSwagger.WrapHandler(c)
+	})
 
 	log.Fatal(app.Listen(fmt.Sprintf(":%s", appPort)))
 }

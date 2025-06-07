@@ -23,7 +23,7 @@ type LoginResponse struct {
 	User        *UserResponse `json:"user"`
 }
 
-type GetUserProfileResponse struct {
+type GetUserMain struct {
 	UserID            string            `json:"user_id"`
 	Name              string            `json:"name"`
 	GreetingAndBanner GreetingAndBanner `json:"greeting_and_banner"`

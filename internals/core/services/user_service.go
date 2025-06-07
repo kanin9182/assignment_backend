@@ -41,7 +41,7 @@ func (s *UserServices) GetUserById(userId string) (*domain.GetUserByIdRequest, e
 	}, nil
 }
 
-func (s *UserServices) GetUserProfile(userId string) (*domain.GetUserProfileResponse, error) {
+func (s *UserServices) GetUserProfile(userId string) (*domain.GetUserMain, error) {
 	resGreetingAndBanner, err := s.userRepo.GetGreetingAndBanner(userId)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (s *UserServices) GetUserProfile(userId string) (*domain.GetUserProfileResp
 		return nil, err
 	}
 
-	return &domain.GetUserProfileResponse{
+	return &domain.GetUserMain{
 		GreetingAndBanner: domain.GreetingAndBanner{
 			BannerId:    resGreetingAndBanner.BannerId,
 			Name:        resGreetingAndBanner.Name,

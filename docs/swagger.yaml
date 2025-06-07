@@ -1,0 +1,210 @@
+basePath: /api
+definitions:
+  domain.AccountInfo:
+    properties:
+      account_id:
+        type: string
+      account_number:
+        type: string
+      amount:
+        type: number
+      color:
+        type: string
+      currency:
+        type: string
+      flag_value:
+        items:
+          type: string
+        type: array
+      is_main_account:
+        type: boolean
+      type:
+        type: string
+    type: object
+  domain.DebitCardIno:
+    properties:
+      border_color:
+        type: string
+      card_id:
+        type: string
+      color:
+        type: string
+      issuer:
+        type: string
+      name:
+        type: string
+      number:
+        type: string
+      status:
+        type: string
+    type: object
+  domain.GetUserMain:
+    properties:
+      account_info:
+        items:
+          $ref: '#/definitions/domain.AccountInfo'
+        type: array
+      debit_card_info:
+        items:
+          $ref: '#/definitions/domain.DebitCardIno'
+        type: array
+      greeting_and_banner:
+        $ref: '#/definitions/domain.GreetingAndBanner'
+      name:
+        type: string
+      user_id:
+        type: string
+    type: object
+  domain.GreetingAndBanner:
+    properties:
+      banner_id:
+        type: string
+      description:
+        type: string
+      greeting:
+        type: string
+      image:
+        type: string
+      name:
+        type: string
+      title:
+        type: string
+    type: object
+  domain.LoginRequest:
+    properties:
+      password:
+        type: string
+      user_id:
+        type: string
+    type: object
+  domain.ResponseStatus:
+    properties:
+      message:
+        type: string
+    type: object
+  domain.UserResponse:
+    properties:
+      name:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: This is an API for the assignment project.
+  title: Assignment API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      description: Returns a message indicating the API is working
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: API is healthy
+          schema:
+            $ref: '#/definitions/domain.ResponseStatus'
+      summary: Check API health status
+      tags:
+      - health
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user by userId and PIN, then return token in cookie
+      parameters:
+      - description: Login Request Payload
+        in: body
+        name: loginRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/domain.ResponseStatus'
+        "401":
+          description: Invalid PIN
+          schema:
+            $ref: '#/definitions/domain.ResponseStatus'
+        "500":
+          description: Failed to generate token or internal error
+          schema:
+            $ref: '#/definitions/domain.ResponseStatus'
+      summary: Login user and generate access token
+      tags:
+      - user
+  /logout:
+    post:
+      description: Clears the access_token cookie to logout the user
+      responses:
+        "200":
+          description: Logout successful
+      summary: Logout user by clearing access token cookie
+      tags:
+      - user
+  /main:
+    get:
+      description: Get user profile by user ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile data
+          schema:
+            $ref: '#/definitions/domain.GetUserMain'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/domain.ResponseStatus'
+      security:
+      - ApiCookieAuth: []
+      summary: Get main user profile
+      tags:
+      - user
+  /profile:
+    get:
+      description: Get current user's profile from token claims
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.ResponseStatus'
+      security:
+      - ApiCookieAuth: []
+      summary: Get user profile for validate token is valid
+      tags:
+      - user
+  /user:
+    get:
+      description: Retrieve user data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of users
+          schema:
+            items:
+              $ref: '#/definitions/domain.UserResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/domain.ResponseStatus'
+      summary: Get user
+      tags:
+      - user
+swagger: "2.0"
