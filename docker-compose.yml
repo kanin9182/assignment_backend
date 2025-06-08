@@ -4,13 +4,15 @@ services:
   db:
     image: mysql:8.0
     restart: always
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: assignment
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: ${DB_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
     ports:
-      - "3306:3306"
+      - "${DB_PORT:-3306}:3306"
     volumes:
       - db_data:/var/lib/mysql
 
@@ -18,15 +20,19 @@ services:
     build: .
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       DB_HOST: db
       DB_PORT: 3306
-      DB_USER: user
-      DB_PASSWORD: password
-      DB_NAME: assignment
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:8081"
     restart: always
+    volumes:
+      - ./.env:/app/.env:ro
 
 volumes:
   db_data:

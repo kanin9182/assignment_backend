@@ -12,6 +12,7 @@ import (
 	"assignment/internals/core/services"
 	"assignment/internals/helper"
 	"assignment/internals/repositories"
+	"assignment/internals/repositories/models"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -36,6 +37,23 @@ func main() {
 	db, err := adapter.NewMySQLDatabase(dsn)
 	if err != nil {
 		log.Fatal("DB connection failed:", err)
+	}
+
+	if err := db.AutoMigrate(
+		&models.User{},
+		&models.AccountBalance{},
+		&models.AccountDetail{},
+		&models.AccountFlag{},
+		&models.Account{},
+		&models.Banner{},
+		&models.DebitCardDesign{},
+		&models.DebitCardDetail{},
+		&models.DebitCardStatus{},
+		&models.DebitCard{},
+		&models.Transaction{},
+		&models.UserGreeting{},
+	); err != nil {
+		log.Fatalf("AutoMigrate failed: %v", err)
 	}
 
 	// InitializeDatabase(db, dsn)
@@ -68,8 +86,8 @@ func InitializeDatabase(db *gorm.DB, dsn string) {
 		log.Fatal("Model generation failed:", err)
 	}
 
-	err = helper.RunSQLFilesInFolder(dsn, "mock")
-	if err != nil {
-		log.Fatal("Running SQL files failed:", err)
-	}
+	//err = helper.RunSQLFilesInFolder(dsn, "mock")
+	//if err != nil {
+	//	log.Fatal("Running SQL files failed:", err)
+	//}
 }

@@ -14,10 +14,11 @@ type Config struct {
 	Password string
 	Host     string
 	DBName   string
+	Port     string
 }
 
 func (c Config) DSN() string {
-	return c.User + ":" + c.Password + "@tcp(" + c.Host + ")/" + c.DBName + "?parseTime=true"
+	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", c.User, c.Password, c.Host, c.Port, c.DBName)
 }
 
 func Load() Config {
@@ -26,6 +27,7 @@ func Load() Config {
 		Password: os.Getenv("DB_PASS"),
 		Host:     os.Getenv("DB_HOST"),
 		DBName:   os.Getenv("DB_NAME"),
+		Port:     os.Getenv("DB_PORT"),
 	}
 }
 
